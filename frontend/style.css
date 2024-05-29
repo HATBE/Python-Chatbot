@@ -1,5 +1,6 @@
 body {
     background-color: #1c1c1c;
+    overflow: hidden;
 }
 
 .message {
@@ -23,4 +24,26 @@ body {
 .message.right div {
     background-color: rgb(59, 59, 158);
     justify-self: end;
-} 
+}
+
+.container {
+    height: 100vh;
+}
+.card {
+    margin-top: 50px;
+    height: calc(100vh - 100px);
+}
+
+.card-body {
+    
+    
+}
+
+#message-wrapper {
+    height: calc(100vh - 220px);
+    overflow-y: auto;
+}
+
+#message-form {
+
+}
