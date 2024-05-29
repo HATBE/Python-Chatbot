@@ -14,12 +14,12 @@ class Server:
         print(f"Client connected. Total connected clients: {len(self.connected_clients)}")
 
         # Send a welcome message to the connected client
-        await websocket.send("Welcome to computer support. My name is {}, How can I assist you today?".format(random.choice(self.chatbot.response_manager.names)))
+        await websocket.send("Welcome to the Computer support. My name is {}, How can I assist you today?".format(random.choice(self.chatbot.response_manager.names)))
 
         try:
             async for message in websocket:    
                 if self.chatbot.make_exit(message):
-                    await websocket.send("Goodby")
+                    await websocket.send("Ok, Goodby")
                     break
 
                 response = self.chatbot.respond(message)
