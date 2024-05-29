@@ -17,9 +17,7 @@ class Server:
         await websocket.send("Welcome to computer support. My name is {}, How can I assist you today?".format(random.choice(self.chatbot.response_manager.names)))
 
         try:
-            async for message in websocket:
-                #print(f"Received message: {message}")
-                
+            async for message in websocket:    
                 if self.chatbot.make_exit(message):
                     await websocket.send("Goodby")
                     break

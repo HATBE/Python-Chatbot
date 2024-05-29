@@ -21,6 +21,18 @@ body {
     justify-self: start;
 }
 
+.message.special div {
+    background-color: rgb(255, 0, 0);
+    justify-self: center;
+    width: 100% !important;
+    text-align: center;
+}
+
+.message.special div::before {
+    font-weight: bold;
+    content: "INFO! ";
+}
+
 .message.right div {
     background-color: rgb(59, 59, 158);
     justify-self: end;
@@ -34,16 +46,13 @@ body {
     height: calc(100vh - 100px);
 }
 
-.card-body {
-    
-    
-}
 
 #message-wrapper {
     height: calc(100vh - 220px);
     overflow-y: auto;
 }
 
-#message-form {
-
+input:disabled, button:disabled {
+    background-color: black !important;
+    cursor: not-allowed;
 }
