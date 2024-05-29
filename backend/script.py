@@ -1,6 +1,7 @@
 import re
 import spacy
-import socket
+import asyncio
+import websockets
 from nltk.corpus import stopwords
 from collections import Counter
 from nltk import pos_tag
@@ -115,41 +116,38 @@ class ChatProcessor:
 class Server:
     def __init__(self):
         self.chatbot = ChatBot()
+        self.connected_clients = set()
+
+    async def handle_client(self, websocket, path):
+        # Register client
+        self.connected_clients.add(websocket)
+        print(f"Client connected. Total connected clients: {len(self.connected_clients)}")
+
+        # Send a welcome message to the connected client
+        await websocket.send("Welcome to computer support. How can I assist you today?")
+
+        try:
+            async for message in websocket:
+                #print(f"Received message: {message}")
+                
+                if self.chatbot.make_exit(message):
+                    await websocket.send("Goodby")
+                    break
+
+                response = self.chatbot.respond(message)
+                
+                await websocket.send(response)
+                await websocket.send("Do you have any other questions?")
+        except websockets.ConnectionClosed:
+            print("Client disconnected")
+        finally:
+            # Unregister client
+            self.connected_clients.remove(websocket)
+            print(f"Client disconnected. Total connected clients: {len(self.connected_clients)}")
     
-    def serve(self, port):
-        with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as server_socket:
-            try:
-                server_socket.bind(("127.0.0.1", port))
-                server_socket.listen()
-                print(f'Server started and listening on port {port}')
+    async def serve(self, port):
+        async with websockets.serve(self.handle_client, "localhost", port):
+            print("Server started on ws://localhost:{}".format(port))
+            await asyncio.Future()  # Run forever
 
-                while True:
-                    client_socket, client_address = server_socket.accept()
-                    print(f'Accepted connection from {client_address}')
-
-                    with client_socket:
-                        client_socket.sendall(("Welcome to computer support. How can I assist you today?" + '\n').encode('utf-8'))
-                        buffer = ""
-                        while True:
-                            data = client_socket.recv(1024).decode('utf-8')
-                            if not data:
-                                print('No data received. Closing connection.')
-                                break
-
-                            buffer += data
-
-                            if '\n' in buffer:
-                                message, buffer = buffer.split('\n', 1)
-                                
-                                if self.chatbot.make_exit(message):
-                                    client_socket.sendall(("Good Bye" + '\n').encode('utf-8'))
-                                    break
-
-                                response = self.chatbot.respond(message)
-                                client_socket.sendall((response + '\n').encode('utf-8'))
-                                client_socket.sendall(("Do you have any other questions?" + '\n').encode('utf-8'))
-            except Exception as e:
-                print(f"An error occurred: {e}")
-
-
-Server().serve(2000)
+asyncio.run(Server().serve(2000))
