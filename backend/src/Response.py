@@ -36,6 +36,18 @@ class Response:
             "sound": ["sound", "audio", "volume", "speaker"]
         }
         self.blank_spot = "computer"
+        self.names = [
+            "Rajesh Kumar",
+            "Anjali Singh",
+            "Vikram Patel",
+            "Priya Sharma",
+            "Arun Gupta",
+            "Sneha Reddy",
+            "Rohan Desai",
+            "Neha Kapoor",
+            "Suresh Nair",
+            "Kavita Joshi"
+        ]
 
     def get_response(self, key, entity=None):
         if key not in self.responses:
@@ -45,7 +57,7 @@ class Response:
     def find_intent(self, processed_message):
         processed_message = " ".join(processed_message)  # Convert list to string for phrase matching
 
-        for intent,words in self.keywords.items():
+        for intent, words in self.keywords.items():
             for word in words:
                 if word in processed_message:
                     return intent

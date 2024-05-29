@@ -1,6 +1,7 @@
 import asyncio
 import websockets
 from .ChatBot import ChatBot
+import random
 
 class Server:
     def __init__(self):
@@ -13,7 +14,7 @@ class Server:
         print(f"Client connected. Total connected clients: {len(self.connected_clients)}")
 
         # Send a welcome message to the connected client
-        await websocket.send("Welcome to computer support. How can I assist you today?")
+        await websocket.send("Welcome to computer support. My name is {}, How can I assist you today?".format(random.choice(self.chatbot.response_manager.names)))
 
         try:
             async for message in websocket:
