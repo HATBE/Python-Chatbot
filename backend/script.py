@@ -7,6 +7,7 @@ from nltk.tokenize import word_tokenize
 
 class Response:
     def __init__(self):
+        # Dictionary to store responses based on intent
         self.responses = {
             "restart": "Have you tried restarting your {}? It often resolves many issues.",
             "slow": "To fix a slow {} performance, try closing unnecessary applications.",
@@ -25,40 +26,14 @@ class Response:
             "sound": "If you're having sound issues on your {}, ensure the audio drivers are up to date and check the volume settings.",
             "default": "I did not understand that. Can you please describe your problem in more detail?"
         }
-
-    def get_response(self, key, entity=None):
-        if key not in self.responses:
-            return self.responses["default"]
-        return self.responses[key].format(entity)
-
-class ChatBot:
-    def __init__(self):
-        self.chatProcessor = ChatProcessor()
-        self.response_manager = Response()
-        self.exit_commands = ("quit", "goodbye", "exit", "no")
-
-    def make_exit(self, user_message):
-        for command in self.exit_commands:
-            if command in user_message:
-                print("Goodbye!")
-                return True
-        return False
-
-    def chat(self):
-        print("Welcome to computer support. How can I assist you today?")
-        user_message = input()
-
-        while not self.make_exit(user_message):
-            user_message = self.respond(user_message)
-
-    def find_intent(self, user_message):
-        keywords = {
+        # Keywords mapping to intents
+        self.keywords = {
             "restart": ["restart", "reboot", "boot"],
-            "slow": ["slow", "lag", "performance", "lagging"],
+            "slow": ["slow", "lag", "performance"],
             "overheat": ["overheat", "hot", "heat"],
-            "greeting": ["hello", "hi", "how are you", "good morning"],
-            "wifi": ["wifi", "wireless", "internet", "network"],
-            "battery": ["battery", "charge", "charging"],
+            "greeting": ["hello", "hi", "how are you"],
+            "wifi": ["wifi", "wireless network", "internet", "network"],
+            "battery": ["battery", "battery draining", "charge", "charging"],
             "software": ["software", "application", "app", "program"],
             "update": ["update", "upgrade", "patch"],
             "virus": ["virus", "malware", "spyware", "antivirus"],
@@ -69,29 +44,66 @@ class ChatBot:
             "keyboard": ["keyboard", "keys", "typing"],
             "sound": ["sound", "audio", "volume", "speaker"]
         }
+        # Default entity placeholder
+        self.blank_spot = "computer"
 
-        processed_message = self.chatProcessor.preprocess(user_message)
-        for intent, words in keywords.items():
-            if any(word in processed_message for word in words):
-                return intent
+    # Method to get the response based on intent
+    def get_response(self, key, entity=None):
+        if key not in self.responses:
+            return self.responses["default"]
+        return self.responses[key].format(entity)
+
+    # Method to find the intent based on keywords in the processed message
+    def find_intent(self, processed_message):
+        processed_message = " ".join(processed_message)  # Convert list to string for phrase matching
+
+        for intent, words in self.keywords.items():
+            for word in words:
+                if word in processed_message:
+                    return intent
         return "default"
-    
+
+class ChatBot:
+    def __init__(self):
+        self.chatProcessor = ChatProcessor()
+        self.response_manager = Response()
+        self.exit_commands = ("quit", "goodbye", "exit", "no")
+
+    # Method to check if the user wants to exit the chat
+    def make_exit(self, user_message):
+        for command in self.exit_commands:
+            if command in user_message:
+                print("Goodbye!")
+                return True
+        return False
+
+    # Method to start the chat
+    def chat(self):
+        print("Welcome to computer support. How can I assist you today?")
+        user_message = input()
+
+        while not self.make_exit(user_message):
+            user_message = self.respond(user_message)
+
+    # Method to find entities (nouns) in the user message
     def find_entities(self, user_message):
         tagged_user_message = pos_tag(self.chatProcessor.preprocess(user_message))
         message_nouns = self.chatProcessor.extractNouns(tagged_user_message)
         if not message_nouns:
-            return blank_spot
+            return self.response_manager.blank_spot
         tokens = self.chatProcessor.word2vec(" ".join(message_nouns))
-        category = self.chatProcessor.word2vec(blank_spot)
+        category = self.chatProcessor.word2vec(self.response_manager.blank_spot)
         word2vec_result = self.chatProcessor.computeSimilarity(tokens, category)
         word2vec_result.sort(key=lambda x: x[2])
         if len(word2vec_result) < 1:
-            return blank_spot
+            return self.response_manager.blank_spot
         else:
             return word2vec_result[-1][0]
         
+    # Method to generate a response based on the user message
     def respond(self, user_message):
-        intent = self.find_intent(user_message)
+        processed_message = self.chatProcessor.preprocess(user_message)
+        intent = self.response_manager.find_intent(processed_message)
         entity = self.find_entities(user_message) if intent != "greeting" and intent != "default" else ""
         response = self.response_manager.get_response(intent, entity)
         print(response)
@@ -103,6 +115,7 @@ class ChatProcessor:
         self.word2vec = spacy.load('en_core_web_lg')
         self.stopWords = set(stopwords.words('english'))
     
+    # Method to preprocess the input message (lowercasing, removing punctuation, stopwords)
     def preprocess(self, input_sentence):
         input_sentence = input_sentence.lower()
         input_sentence = re.sub(r'[^\w\s]','',input_sentence)
@@ -110,15 +123,15 @@ class ChatProcessor:
         input_sentence = [i for i in tokens if not i in self.stopWords]
         return input_sentence
     
+    # Method to extract nouns from the tagged message
     def extractNouns(self, tagged_message):
         message_nouns = [token[0] for token in tagged_message if token[1].startswith("N")]
         return message_nouns
     
+    # Method to compute similarity between tokens and a category
     def computeSimilarity(self, tokens, category):
         output_list = [[token.text, category.text, token.similarity(category)] for token in tokens]
         return output_list
-
-blank_spot = "computer"
 
 chatbot = ChatBot()
 chatbot.chat()
