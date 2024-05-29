@@ -1,5 +1,6 @@
 import re
 import spacy
+import socket
 from nltk.corpus import stopwords
 from collections import Counter
 from nltk import pos_tag
@@ -7,7 +8,6 @@ from nltk.tokenize import word_tokenize
 
 class Response:
     def __init__(self):
-        # Dictionary to store responses based on intent
         self.responses = {
             "restart": "Have you tried restarting your {}? It often resolves many issues.",
             "slow": "To fix a slow {} performance, try closing unnecessary applications.",
@@ -26,7 +26,6 @@ class Response:
             "sound": "If you're having sound issues on your {}, ensure the audio drivers are up to date and check the volume settings.",
             "default": "I did not understand that. Can you please describe your problem in more detail?"
         }
-        # Keywords mapping to intents
         self.keywords = {
             "restart": ["restart", "reboot", "boot"],
             "slow": ["slow", "lag", "performance"],
@@ -44,20 +43,17 @@ class Response:
             "keyboard": ["keyboard", "keys", "typing"],
             "sound": ["sound", "audio", "volume", "speaker"]
         }
-        # Default entity placeholder
         self.blank_spot = "computer"
 
-    # Method to get the response based on intent
     def get_response(self, key, entity=None):
         if key not in self.responses:
             return self.responses["default"]
         return self.responses[key].format(entity)
 
-    # Method to find the intent based on keywords in the processed message
     def find_intent(self, processed_message):
         processed_message = " ".join(processed_message)  # Convert list to string for phrase matching
 
-        for intent, words in self.keywords.items():
+        for intent,words in self.keywords.items():
             for word in words:
                 if word in processed_message:
                     return intent
@@ -69,23 +65,12 @@ class ChatBot:
         self.response_manager = Response()
         self.exit_commands = ("quit", "goodbye", "exit", "no")
 
-    # Method to check if the user wants to exit the chat
     def make_exit(self, user_message):
         for command in self.exit_commands:
             if command in user_message:
-                print("Goodbye!")
                 return True
         return False
 
-    # Method to start the chat
-    def chat(self):
-        print("Welcome to computer support. How can I assist you today?")
-        user_message = input()
-
-        while not self.make_exit(user_message):
-            user_message = self.respond(user_message)
-
-    # Method to find entities (nouns) in the user message
     def find_entities(self, user_message):
         tagged_user_message = pos_tag(self.chatProcessor.preprocess(user_message))
         message_nouns = self.chatProcessor.extractNouns(tagged_user_message)
@@ -99,39 +84,72 @@ class ChatBot:
             return self.response_manager.blank_spot
         else:
             return word2vec_result[-1][0]
-        
-    # Method to generate a response based on the user message
+
     def respond(self, user_message):
         processed_message = self.chatProcessor.preprocess(user_message)
         intent = self.response_manager.find_intent(processed_message)
         entity = self.find_entities(user_message) if intent != "greeting" and intent != "default" else ""
         response = self.response_manager.get_response(intent, entity)
-        print(response)
-        input_message = input("Do you have any other questions? ")
-        return input_message
+        return response
 
 class ChatProcessor:
     def __init__(self):
         self.word2vec = spacy.load('en_core_web_lg')
         self.stopWords = set(stopwords.words('english'))
-    
-    # Method to preprocess the input message (lowercasing, removing punctuation, stopwords)
+
     def preprocess(self, input_sentence):
         input_sentence = input_sentence.lower()
-        input_sentence = re.sub(r'[^\w\s]','',input_sentence)
+        input_sentence = re.sub(r'[^\w\s]', '', input_sentence)
         tokens = word_tokenize(input_sentence)
         input_sentence = [i for i in tokens if not i in self.stopWords]
         return input_sentence
-    
-    # Method to extract nouns from the tagged message
+
     def extractNouns(self, tagged_message):
         message_nouns = [token[0] for token in tagged_message if token[1].startswith("N")]
         return message_nouns
-    
-    # Method to compute similarity between tokens and a category
+
     def computeSimilarity(self, tokens, category):
         output_list = [[token.text, category.text, token.similarity(category)] for token in tokens]
         return output_list
 
-chatbot = ChatBot()
-chatbot.chat()
+class Server:
+    def __init__(self):
+        self.chatbot = ChatBot()
+    
+    def serve(self, port):
+        with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as server_socket:
+            try:
+                server_socket.bind(("127.0.0.1", port))
+                server_socket.listen()
+                print(f'Server started and listening on port {port}')
+
+                while True:
+                    client_socket, client_address = server_socket.accept()
+                    print(f'Accepted connection from {client_address}')
+
+                    with client_socket:
+                        client_socket.sendall(("Welcome to computer support. How can I assist you today?" + '\n').encode('utf-8'))
+                        buffer = ""
+                        while True:
+                            data = client_socket.recv(1024).decode('utf-8')
+                            if not data:
+                                print('No data received. Closing connection.')
+                                break
+
+                            buffer += data
+
+                            if '\n' in buffer:
+                                message, buffer = buffer.split('\n', 1)
+                                
+                                if self.chatbot.make_exit(message):
+                                    client_socket.sendall(("Good Bye" + '\n').encode('utf-8'))
+                                    break
+
+                                response = self.chatbot.respond(message)
+                                client_socket.sendall((response + '\n').encode('utf-8'))
+                                client_socket.sendall(("Do you have any other questions?" + '\n').encode('utf-8'))
+            except Exception as e:
+                print(f"An error occurred: {e}")
+
+
+Server().serve(2000)
