@@ -47,6 +47,7 @@ ws.onopen = () => {
 };
 
 ws.onmessage = (event) => {
+    // when the connection starts
     try {
         message = JSON.parse(event.data);
     } catch(error) {
@@ -55,7 +56,7 @@ ws.onmessage = (event) => {
     }   
 
     if(message.type == "init") {
-        // Handle the init package that is sent on chat initioation
+        // handle the init package that is sent on chat initioation
         supporter_name = message.supporter_name;
     } else if(message.type == "message") {
         // messages from server
@@ -67,6 +68,7 @@ ws.onmessage = (event) => {
 };
 
 ws.onclose = () => {
+    // when the connection closes
     console.log("Connection closed");
     addSpecialMessage("Connection Closed");
     messageTextEl.disabled = true;
@@ -74,6 +76,7 @@ ws.onclose = () => {
 };
 
 ws.onerror = (error) => {
+    // when the connection has an error
     console.error("WebSocket error:", error);
     addSpecialMessage("WebSocket error occurred");
     messageTextEl.disabled = true;
@@ -81,6 +84,7 @@ ws.onerror = (error) => {
 };
 
 messageFormEl.addEventListener("submit", (event) => {
+    // when the user sends the messasge
     event.preventDefault();
 
     const message = messageTextEl.value;
