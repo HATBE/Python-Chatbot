@@ -1,5 +1,3 @@
-const ws = new WebSocket("ws://localhost:2000");
-
 const messageFormEl = document.getElementById("message-form");
 const messageTextEl =  document.getElementById("message-text");
 const sendButtonEl =  document.getElementById("send-button");
@@ -42,6 +40,8 @@ function copyTemplate(templateName) {
     return document.importNode(document.getElementById(templateName).content, true);
 }
 
+const ws = new WebSocket("ws://localhost:2000");
+
 ws.onopen = () => {
     console.log("Connected to the server");
 };
@@ -80,22 +80,18 @@ ws.onerror = (error) => {
     sendButtonEl.disabled = true;
 };
 
-
 messageFormEl.addEventListener("submit", (event) => {
     event.preventDefault();
 
     const message = messageTextEl.value;
 
     if (message) {
-        if(message == "clear") {
-            messageWrapper.innerHTML = "";
-            messageTextEl.value = "";
-            return;
-        }
-
         addRightMessage(message);
 
         ws.send(message);
         messageTextEl.value = "";
+        messageTextEl.focus
     }
 });
+
+startWebsocket();

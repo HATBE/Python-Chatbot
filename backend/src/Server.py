@@ -4,8 +4,6 @@ from .ChatBot import ChatBot
 import random
 import json
 
-# TODO: first message is information like supporter name, in frontend show the supporter name on top of the message
-
 class Server:
     def __init__(self):
         self.chatbot = ChatBot()

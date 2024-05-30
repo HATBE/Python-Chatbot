@@ -13,7 +13,7 @@ body {
 .message .message-bubble {
     overflow: hidden;
     border-radius: 10px;
-    max-width: 50%;
+    max-width: 70%;
 }
 
 .message .message-bubble .message-text {
@@ -23,6 +23,7 @@ body {
 .message.left .message-bubble {
     background-color: rgb(126, 50, 50);
     justify-self: start;
+    border-bottom-left-radius: 0;
 }
 
 .message.special .message-bubble {
@@ -45,6 +46,7 @@ body {
 .message.right .message-bubble {
     background-color: rgb(59, 59, 158);
     justify-self: end;
+    border-bottom-right-radius: 0;
 }
 
 .container {
@@ -59,6 +61,12 @@ body {
 #message-wrapper {
     height: calc(100vh - 220px);
     overflow-y: auto;
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}
+
+#message-wrapper::-webkit-scrollbar {
+    display: none;
 }
 
 input:disabled, button:disabled {

@@ -1,0 +1,9 @@
+slow:
+my macbook is slow
+my computer is slow
+
+password:
+i forgot my password
+
+wifi:
+My Computer has Wifi Problems
