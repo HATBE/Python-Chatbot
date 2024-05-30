@@ -24,7 +24,7 @@ class Response:
             "overheat": ["overheat", "hot", "heat"],
             "greeting": ["hello", "hi", "how are you"],
             "wifi": ["wifi", "wireless", "internet", "network"],
-            "battery": ["battery", "battery draining", "charge", "charging"],
+            "battery": ["battery", "draining", "charge", "charging"],
             "software": ["software", "application", "app", "program"],
             "update": ["update", "upgrade", "patch"],
             "virus": ["virus", "malware", "spyware", "antivirus"],

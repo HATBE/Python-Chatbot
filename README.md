@@ -54,6 +54,9 @@ This is the websocket traffic for this chat:
 
 ![alt text](_docs/.img/3.png)
 
+You can also use a tool like wscat if you fancy to
+
+![alt text](_docs/.img/4.png)
 
 # Reflection
 // TODO:

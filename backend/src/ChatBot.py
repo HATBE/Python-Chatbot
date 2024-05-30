@@ -6,7 +6,7 @@ class ChatBot:
     def __init__(self):
         self.chatProcessor = ChatProcessor()
         self.response_manager = Response()
-        self.exit_commands = ("quit", "goodbye", "exit", "no")
+        self.exit_commands = ("quit", "goodbye", "exit")
 
     def make_exit(self, user_message):
         for command in self.exit_commands:
