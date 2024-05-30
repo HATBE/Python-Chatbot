@@ -10,30 +10,39 @@ body {
     display: grid;
 }
 
-.message div {
-    padding: 10px;
+.message .message-bubble {
+    overflow: hidden;
     border-radius: 10px;
     max-width: 50%;
 }
 
-.message.left div {
+.message .message-bubble .message-text {
+    padding: 10px;
+}
+
+.message.left .message-bubble {
     background-color: rgb(126, 50, 50);
     justify-self: start;
 }
 
-.message.special div {
+.message.special .message-bubble {
     background-color: rgb(255, 0, 0);
     justify-self: center;
     width: 100% !important;
     text-align: center;
 }
 
-.message.special div::before {
+.message .message-bubble .message-name {
     font-weight: bold;
-    content: "INFO! ";
+    padding: 4px 10px;
+    background-color: rgb(128, 36, 36);
 }
 
-.message.right div {
+.message.special .message-bubble .message-name {
+    background-color: rgb(214, 21, 21);
+}
+
+.message.right .message-bubble {
     background-color: rgb(59, 59, 158);
     justify-self: end;
 }
