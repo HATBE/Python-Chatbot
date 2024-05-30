@@ -50,15 +50,20 @@ class Response:
         ]
 
     def get_response(self, key, entity=None):
+        # fetch a response based on the key, formatting it with the entity if provided
         if key not in self.responses:
             return self.responses["default"]
         return self.responses[key].format(entity)
 
     def find_intent(self, processed_message):
+        # convert the processed message list to a string for easier phrase matching
         processed_message = " ".join(processed_message)  # Convert list to string for phrase matching
 
+        # check the processed message for any keywords corresponding to an intent
         for intent, words in self.keywords.items():
             for word in words:
                 if word in processed_message:
                     return intent
+                
+        # Return default if no keywords match
         return "default"
