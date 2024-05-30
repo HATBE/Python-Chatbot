@@ -42,7 +42,7 @@ The first thing the chatbot sends is a "init" message with some information (cur
 | Websockets   | Protocol for real-time communication    |
 
 # Screenshots
-Basic chat layout on https://ip_to_frontend:2000
+Basic chat layout on http://ip_to_frontend:80
 
 ![alt text](_docs/.img/1.png)
 
@@ -54,9 +54,13 @@ This is the websocket traffic for this chat:
 
 ![alt text](_docs/.img/3.png)
 
-You can also use a tool like wscat if you fancy to
+You can also use a tool like wscat if you fancy to.
 
 ![alt text](_docs/.img/4.png)
+
+This is the "Big"-Picture
+
+![alt text](_docs/.img/5.png)
 
 # Reflection
 // TODO:
