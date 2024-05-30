@@ -30,7 +30,7 @@ For this Tech Support Chatbot i made a retrieval based method. I decided on the 
 ## Frontend
 
 The Frontend starts a websocket connection to the backend (chatbot).
-The first thing the chatbot sends is a "init" message with some information (currently just the supporter_name) this message will not be displayed to the user. 
+The first thing the chatbot sends is a "init" message with some information (currently just the supporter_name (this will be random select of names)) this message will not be displayed to the user. After thet there is a greeting. then the user can ask questions that will be answered.
 
 ### Dependencies / Libraries
 | Technology   | Description                             |
