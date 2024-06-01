@@ -1,3 +1,6 @@
+greeting: 
+hello, how are you?
+
 slow:
 my macbook is slow
 my computer is slow
@@ -7,3 +10,12 @@ i forgot my password
 
 wifi:
 My Computer has Wifi Problems
+
+battery:
+My phone battery is draining quickly
+
+virus:
+Does my toaster has a virus?
+
+hardware:
+my computer has some hardware problems

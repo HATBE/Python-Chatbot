@@ -1,4 +1,4 @@
-class Response:
+class ResponseManager:
     def __init__(self):
         self.responses = {
             "restart": "Have you tried restarting your {}? It often resolves many issues.",
