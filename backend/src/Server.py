@@ -39,7 +39,7 @@ class Server:
         finally:
             # delete client
             self.connected_clients.remove(websocket)
-            print(f"Client disconnected. Total connected clients: {len(self.connected_clients)}")
+            print("Client disconnected. Total connected clients: {}".format(len(self.connected_clients)))
     
     async def serve(self, port):
         async with websockets.serve(self.handle_client, "localhost", port):
