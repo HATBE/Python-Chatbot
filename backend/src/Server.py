@@ -12,7 +12,7 @@ class Server:
     async def handle_client(self, websocket, path):
         # add client
         self.connected_clients.add(websocket)
-        print(f"Client connected. Total connected clients: {len(self.connected_clients)}")
+        print("Client connected. Total connected clients: {}".format(len(self.connected_clients)))
 
         supporter_name = random.choice(self.chatbot.response_manager.names)
 
